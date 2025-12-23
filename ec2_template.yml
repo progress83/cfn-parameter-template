@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Simple EC2 Instance using CloudFormation
+
+Parameters:
+  KeyName:
+    Description: EC2 KeyPair for SSH access
+    Type: AWS::EC2::KeyPair::KeyName
+
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t3.micro
+      - t3.small
+
+  AMIId:
+    Description: Amazon Linux 2 AMI ID
+    Type: AWS::EC2::Image::Id
+  
+  MyVPC:
+    Description: Existing VPC to launch instance in
+    Type: AWS::EC2::VPC::Id
+  
+  MySubnetIDs:
+    Description: Lists subnets in the aws account for user to choose CloudFormation
+    Type: AWS::EC2::Subnet::Id
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      ImageId: !Ref AMIId
+      SubnetId: !Ref MySubnetIDs
+      Tags:
+        - Key: Name
+          Value: MyEC2Instance
+
+Outputs:
+  InstanceId:
+    Description: EC2 Instance ID
+    Value: !Ref EC2Instance
+
+  PublicIP:
+    Description: Public IP address
+    Value: !GetAtt EC2Instance.PublicIp
